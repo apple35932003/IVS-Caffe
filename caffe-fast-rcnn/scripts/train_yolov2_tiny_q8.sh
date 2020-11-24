@@ -1,0 +1,1 @@
+./caffe-fast-rcnn/build/tools/caffe train -solver ./caffe-fast-rcnn/models/yolov2-tiny-my-IVS_3cls/q8-noBN/solver_noBN_q8.prototxt -weights ./caffe-fast-rcnn/models/yolov2-tiny-my-IVS_3cls/q8-noBN/fp_noBN_deploy.caffemodel -gpu 1 2>&1 | tee caffe-fast-rcnn/models/yolov2-tiny-my-IVS_3cls/q8-noBN/train_q8_noBN.log

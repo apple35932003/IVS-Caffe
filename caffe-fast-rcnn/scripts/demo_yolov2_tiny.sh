@@ -1,0 +1,1 @@
+./build/examples/yolo/yolo_detect.bin test.prototxt ./models/yolov2-tiny-my-IVS_3cls/fp/fp_deploy_iter_60000.caffemodel ../16_cut.mp4 -file_type video -wait_time 1 -mean_value 0.0,0.0,0.0 -normalize_value 0.0039138 -confidence_threshold 0.3 -out_video out.avi

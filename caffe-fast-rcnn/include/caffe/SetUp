@@ -1,0 +1,662 @@
+net.hpp:   * the middle may be incorrect if all of the layers of a fan-in are not
+net.hpp:   *        additional memory) the pre-trained layers from another Net.
+net.hpp:   * @brief For an already initialized net, copies the pre-trained layers from
+net.hpp:   * @brief returns the bottom vecs for each layer -- usually you won't
+net.hpp:   *        need this unless you do per-layer checks such as gradients.
+net.hpp:   * @brief returns the top vecs for each layer -- usually you won't
+net.hpp:   *        need this unless you do per-layer checks such as gradients.
+net.hpp:   * The mapping from params_ -> learnable_params_: we have
+test/test_caffe_main.hpp:  #define CUDA_TEST_DEVICE -1
+test/test_gradient_check_util.hpp:  // kink - kink_range <= |feature value| <= kink + kink_range,
+test/test_gradient_check_util.hpp:      const Dtype kink_range = -1)
+test/test_gradient_check_util.hpp:      const vector<Blob<Dtype>*>& top, int check_bottom = -1) {
+test/test_gradient_check_util.hpp:      layer->SetUp(bottom, top);
+test/test_gradient_check_util.hpp:      CheckGradientSingle(layer, bottom, top, check_bottom, -1, -1);
+test/test_gradient_check_util.hpp:      int check_bottom = -1);
+test/test_gradient_check_util.hpp:  // CheckGradientEltwise can be used to test layers that perform element-wise
+test/test_gradient_check_util.hpp:  // computation only (e.g., neuron layers) -- where (d y_i) / (d x_j) = 0 when
+test/test_gradient_check_util.hpp:  // If check_bottom == -1, check everything -- all bottom Blobs and all
+test/test_gradient_check_util.hpp:  // param Blobs.  Otherwise (if check_bottom < -1), check only param Blobs.
+test/test_gradient_check_util.hpp:  // checked, layer-by-layer to avoid numerical problems to accumulate.
+test/test_gradient_check_util.hpp:      const vector<Blob<Dtype>*>& top, int top_id = -1, int top_data_id = -1);
+test/test_gradient_check_util.hpp:    CHECK_EQ(0, layer->blobs().size());
+test/test_gradient_check_util.hpp:    const int top_count = top[top_id]->count();
+test/test_gradient_check_util.hpp:      CHECK_EQ(top_count, bottom[blob_id]->count());
+test/test_gradient_check_util.hpp:  vector<bool> propagate_down(bottom.size(), check_bottom == -1);
+test/test_gradient_check_util.hpp:  for (int i = 0; i < layer->blobs().size(); ++i) {
+test/test_gradient_check_util.hpp:    Blob<Dtype>* blob = layer->blobs()[i].get();
+test/test_gradient_check_util.hpp:    caffe_set(blob->count(), static_cast<Dtype>(0), blob->mutable_cpu_diff());
+test/test_gradient_check_util.hpp:  if (check_bottom == -1) {
+test/test_gradient_check_util.hpp:  layer->Forward(bottom, top);
+test/test_gradient_check_util.hpp:  layer->Backward(top, propagate_down, bottom);
+test/test_gradient_check_util.hpp:    computed_gradient_blobs[blob_id]->ReshapeLike(*current_blob);
+test/test_gradient_check_util.hpp:    const int count = blobs_to_check[blob_id]->count();
+test/test_gradient_check_util.hpp:    const Dtype* diff = blobs_to_check[blob_id]->cpu_diff();
+test/test_gradient_check_util.hpp:        computed_gradient_blobs[blob_id]->mutable_cpu_data();
+test/test_gradient_check_util.hpp:        computed_gradient_blobs[blob_id]->cpu_data();
+test/test_gradient_check_util.hpp:    //     << current_blob->count() << " parameters.";
+test/test_gradient_check_util.hpp:    for (int feat_id = 0; feat_id < current_blob->count(); ++feat_id) {
+test/test_gradient_check_util.hpp:      // For an element-wise layer, we only need to do finite differencing to
+test/test_gradient_check_util.hpp:        current_blob->mutable_cpu_data()[feat_id] += stepsize_;
+test/test_gradient_check_util.hpp:        layer->Forward(bottom, top);
+test/test_gradient_check_util.hpp:        current_blob->mutable_cpu_data()[feat_id] -= stepsize_ * 2;
+test/test_gradient_check_util.hpp:        layer->Forward(bottom, top);
+test/test_gradient_check_util.hpp:        current_blob->mutable_cpu_data()[feat_id] += stepsize_;
+test/test_gradient_check_util.hpp:        estimated_gradient = (positive_objective - negative_objective) /
+test/test_gradient_check_util.hpp:      Dtype feature = current_blob->cpu_data()[feat_id];
+test/test_gradient_check_util.hpp:      // LOG(ERROR) << "debug: " << current_blob->cpu_data()[feat_id] << " "
+test/test_gradient_check_util.hpp:      //     << current_blob->cpu_diff()[feat_id];
+test/test_gradient_check_util.hpp:      if (kink_ - kink_range_ > fabs(feature)
+test/test_gradient_check_util.hpp:          << "; objective- = " << negative_objective;
+test/test_gradient_check_util.hpp:      // LOG(ERROR) << "Feature: " << current_blob->cpu_data()[feat_id];
+test/test_gradient_check_util.hpp:  layer->SetUp(bottom, top);
+test/test_gradient_check_util.hpp:    // LOG(ERROR) << "Exhaustive: blob " << i << " size " << top[i]->count();
+test/test_gradient_check_util.hpp:    for (int j = 0; j < top[i]->count(); ++j) {
+test/test_gradient_check_util.hpp:  layer->SetUp(bottom, top);
+test/test_gradient_check_util.hpp:  const int check_bottom = -1;
+test/test_gradient_check_util.hpp:    for (int j = 0; j < top[i]->count(); ++j) {
+test/test_gradient_check_util.hpp:    LOG(ERROR) << "Checking gradient for " << layers[i]->layer_param().name();
+test/test_gradient_check_util.hpp:      const Dtype* top_blob_data = top_blob->cpu_data();
+test/test_gradient_check_util.hpp:      Dtype* top_blob_diff = top_blob->mutable_cpu_diff();
+test/test_gradient_check_util.hpp:      int count = top_blob->count();
+test/test_gradient_check_util.hpp:      caffe_copy(top_blob->count(), top_blob_data, top_blob_diff);
+test/test_gradient_check_util.hpp:    // the loss will be the top_data_id-th element in the top_id-th blob.
+test/test_gradient_check_util.hpp:      Dtype* top_blob_diff = top_blob->mutable_cpu_diff();
+test/test_gradient_check_util.hpp:      caffe_set(top_blob->count(), Dtype(0), top_blob_diff);
+test/test_gradient_check_util.hpp:    loss = top[top_id]->cpu_data()[top_data_id] * loss_weight;
+test/test_gradient_check_util.hpp:    top[top_id]->mutable_cpu_diff()[top_data_id] = loss_weight;
+fast_rcnn_layers.hpp:// ------------------------------------------------------------------
+fast_rcnn_layers.hpp:// Fast R-CNN
+fast_rcnn_layers.hpp:// Licensed under The MIT License [see fast-rcnn/LICENSE for details]
+fast_rcnn_layers.hpp:// ------------------------------------------------------------------
+fast_rcnn_layers.hpp:/* ROIPoolingLayer - Region of Interest Pooling Layer
+fast_rcnn_layers.hpp:  virtual inline int ExactNumBottomBlobs() const { return -1; }
+fast_rcnn_layers.hpp:   * to both inputs -- override to return true and always allow force_backward.
+parallel.hpp:   * In multi-process settings, first create a NCCL id (new_uid), then
+parallel.hpp:   * Single process multi-GPU.
+data_transformer.hpp:   *    1-channel cv::Mat containing the data to be transformed.
+data_transformer.hpp:   * @brief Generates a random integer from Uniform({0, 1, ..., n-1}).
+data_transformer.hpp:   *    A uniformly random integer value from ({0, 1, ..., n-1}).
+filler.hpp:/// @brief Fills a Blob with constant or randomly-generated data.
+filler.hpp:    Dtype* data = blob->mutable_cpu_data();
+filler.hpp:    const int count = blob->count();
+filler.hpp:    const Dtype value = this->filler_param_.value();
+filler.hpp:    CHECK_EQ(this->filler_param_.sparse(), -1)
+filler.hpp:    CHECK(blob->count());
+filler.hpp:    caffe_rng_uniform<Dtype>(blob->count(), Dtype(this->filler_param_.min()),
+filler.hpp:        Dtype(this->filler_param_.max()), blob->mutable_cpu_data());
+filler.hpp:    CHECK_EQ(this->filler_param_.sparse(), -1)
+filler.hpp:/// @brief Fills a Blob with Gaussian-distributed values @f$ x = a @f$.
+filler.hpp:    Dtype* data = blob->mutable_cpu_data();
+filler.hpp:    CHECK(blob->count());
+filler.hpp:    caffe_rng_gaussian<Dtype>(blob->count(), Dtype(this->filler_param_.mean()),
+filler.hpp:        Dtype(this->filler_param_.std()), blob->mutable_cpu_data());
+filler.hpp:    int sparse = this->filler_param_.sparse();
+filler.hpp:    CHECK_GE(sparse, -1);
+filler.hpp:      // of non-zero input weights for a given output.
+filler.hpp:      CHECK_GE(blob->num_axes(), 1);
+filler.hpp:      const int num_outputs = blob->shape(0);
+filler.hpp:      rand_vec_.reset(new SyncedMemory(blob->count() * sizeof(int)));
+filler.hpp:      int* mask = reinterpret_cast<int*>(rand_vec_->mutable_cpu_data());
+filler.hpp:      caffe_rng_bernoulli(blob->count(), non_zero_probability, mask);
+filler.hpp:      for (int i = 0; i < blob->count(); ++i) {
+filler.hpp:    Dtype* data = blob->mutable_cpu_data();
+filler.hpp:    DCHECK(blob->count());
+filler.hpp:    caffe_rng_uniform<Dtype>(blob->count(), 0, 1, blob->mutable_cpu_data());
+filler.hpp:    int dim = blob->count() / blob->shape(0);
+filler.hpp:    for (int i = 0; i < blob->shape(0); ++i) {
+filler.hpp:    CHECK_EQ(this->filler_param_.sparse(), -1)
+filler.hpp: * @brief Fills a Blob with values @f$ x \sim U(-a, +a) @f$ where @f$ a @f$ is
+filler.hpp: * It fills the incoming matrix by randomly sampling uniform data from [-scale,
+filler.hpp:    CHECK(blob->count());
+filler.hpp:    int fan_in = blob->count() / blob->shape(0);
+filler.hpp:    int fan_out = blob->num_axes() > 1 ?
+filler.hpp:                  blob->count() / blob->shape(1) :
+filler.hpp:                  blob->count();
+filler.hpp:    if (this->filler_param_.variance_norm() ==
+filler.hpp:    } else if (this->filler_param_.variance_norm() ==
+filler.hpp:    caffe_rng_uniform<Dtype>(blob->count(), -scale, scale,
+filler.hpp:        blob->mutable_cpu_data());
+filler.hpp:    CHECK_EQ(this->filler_param_.sparse(), -1)
+filler.hpp:    CHECK(blob->count());
+filler.hpp:    int fan_in = blob->count() / blob->shape(0);
+filler.hpp:    int fan_out = blob->num_axes() > 1 ?
+filler.hpp:                  blob->count() / blob->shape(1) :
+filler.hpp:                  blob->count();
+filler.hpp:    if (this->filler_param_.variance_norm() ==
+filler.hpp:    } else if (this->filler_param_.variance_norm() ==
+filler.hpp:    caffe_rng_gaussian<Dtype>(blob->count(), Dtype(0), std,
+filler.hpp:        blob->mutable_cpu_data());
+filler.hpp:    CHECK_EQ(this->filler_param_.sparse(), -1)
+filler.hpp:    kernel_size: {{2 * factor - factor % 2}} stride: {{factor}}
+filler.hpp:    pad: {{ceil((factor - 1) / 2.)}}
+filler.hpp:channel-wise convolution. The filter shape of this deconvolution layer will be
+filler.hpp:    CHECK_EQ(blob->num_axes(), 4) << "Blob must be 4 dim.";
+filler.hpp:    CHECK_EQ(blob->width(), blob->height()) << "Filter must be square";
+filler.hpp:    Dtype* data = blob->mutable_cpu_data();
+filler.hpp:    int f = ceil(blob->width() / 2.);
+filler.hpp:    Dtype c = (blob->width() - 1) / (2. * f);
+filler.hpp:    for (int i = 0; i < blob->count(); ++i) {
+filler.hpp:      Dtype x = i % blob->width();
+filler.hpp:      Dtype y = (i / blob->width()) % blob->height();
+filler.hpp:      data[i] = (1 - fabs(x / f - c)) * (1 - fabs(y / f - c));
+filler.hpp:    CHECK_EQ(this->filler_param_.sparse(), -1)
+data_reader.hpp: * are running in parallel, e.g. for multi-GPU training. This makes sure
+data_reader.hpp: * subset of the database. Data is distributed to solvers in a round-robin
+data_reader.hpp:    return queue_pair_->free_;
+data_reader.hpp:    return queue_pair_->full_;
+blob.hpp:   * @brief Returns the dimension of the index-th axis (or the negative index-th
+blob.hpp:   * @brief Returns the 'canonical' version of a (usually) user-specified axis,
+blob.hpp:   *        allowing for negative indexing (e.g., -1 for the last axis).
+blob.hpp:   *        If -num_axes <= index <= -1, return (num_axes() - (-index)),
+blob.hpp:   *        e.g., the last axis index (num_axes() - 1) if index == -1,
+blob.hpp:   *        the second to last if index == -2, etc.
+blob.hpp:    CHECK_GE(axis_index, -num_axes())
+blob.hpp:        << "-D Blob with shape " << shape_string();
+blob.hpp:        << "-D Blob with shape " << shape_string();
+blob.hpp:    CHECK_GE(index, -5);
+blob.hpp:    if (index >= num_axes() || index < -num_axes()) {
+blob.hpp:      // Axis is out of range, but still in [0, 4] (or [-5, -1] for reverse
+blob.hpp:      // indexing) -- this special case simulates the one-padding used to fill
+blob.hpp:    // in data transformer, a unit blob is used to hold (c,h,w)-contiguous data
+blob.hpp:    // and populate a (l,c,h,w)-dim video clip, hence, blob must be contiguous
+blob.hpp:   * @param reshape if false, require this Blob to be pre-shaped to the shape
+blob.hpp:   *        data_ of Blob other -- useful in Layer%s which simply perform a copy
+blob.hpp:   *        diff_ of Blob other -- useful in Layer%s which simply perform a copy
+solver.hpp:  * execution with a SIGINT (Ctrl-C).
+solver.hpp:  // in a non-zero iter number to resume training for a pre-trained net.
+solver_factory.hpp: * ("MyAwesomeSolver" -> "MyAwesome").
+solver_factory.hpp:      solver_types.push_back(iter->first);
+solver_factory.hpp:  // Solver registry should never be instantiated - everything is done with its
+util/io.hpp:  temp_dirname->clear();
+util/io.hpp:    boost::filesystem::temp_directory_path()/"caffe_test.%%%%-%%%%";
+util/io.hpp:  temp_filename->clear();
+util/io.hpp:  temp_dirname->clear();
+util/io.hpp:    boost::filesystem::temp_directory_path()/"caffe_test.%%%%-%%%%";
+util/io.hpp:  temp_filename->clear();
+util/io.hpp:  return ReadFileToDatum(filename, -1, datum);
+util/io.hpp:	return ReadFileToDatumSeg(filename, -1, datum);
+util/mkl_alternate.hpp:DEFINE_VSL_BINARY_FUNC(Sub, y[i] = a[i] - b[i])
+util/mkl_alternate.hpp:// in standard blas. We will simply use a two-step (inefficient, of course) way
+util/bbox_util.hpp://    top_k: if -1, keep all; otherwise, keep at most top_k.
+util/bbox_util.hpp://    top_k: if -1, keep all; otherwise, keep at most top_k.
+util/bbox_util.hpp://    top_k: if -1, keep all; otherwise, keep at most top_k.
+util/bbox_util.hpp://    top_k: if -1, keep all; otherwise, keep at most top_k.
+util/bbox_util.hpp://    top_k: if not -1, keep at most top_k picked indices.
+util/bbox_util.hpp://    top_k: if not -1, keep at most top_k picked indices.
+util/bbox_util.hpp://    top_k: if not -1, keep at most top_k picked indices.
+util/bbox_util.hpp://      Check https://sanchom.wordpress.com/tag/average-precision/ for details.
+util/bbox_util.hpp://      11point: the 11-point interpolated average precision. Used in VOC2007.
+util/bbox_util.hpp://      Integral: the natural integral of the precision-recall curve.
+util/math_functions.hpp:static inline float logistic_activate(float x) { return 1. / (1. + exp(-x)); }
+util/math_functions.hpp:static inline float logistic_gradient(float x) { return (1 - x)*x; }
+util/math_functions.hpp:// the branchless, type-safe version from
+util/math_functions.hpp:// http://stackoverflow.com/questions/1903954/is-there-a-standard-sign-function-signum-sgn-in-c-c
+util/math_functions.hpp:  return (Dtype(0) < val) - (val < Dtype(0));
+util/math_functions.hpp:// Please refer to commit 7e8ef25c7 of the boost-eigen branch.
+util/math_functions.hpp:// output is 1 for the positives, 0 for zero, and -1 for the negatives
+util/math_functions.hpp:// gemm function - following the c convention and calling the fortran-order
+util/rng.hpp:  for (difference_type i = length - 1; i > 0; --i) {
+util/db_leveldb.hpp:  virtual void SeekToFirst() { iter_->SeekToFirst(); }
+util/db_leveldb.hpp:  virtual void Next() { iter_->Next(); }
+util/db_leveldb.hpp:  virtual string key() { return iter_->key().ToString(); }
+util/db_leveldb.hpp:  virtual string value() { return iter_->value().ToString(); }
+util/db_leveldb.hpp:  virtual bool valid() { return iter_->Valid(); }
+util/db_leveldb.hpp:    leveldb::Status status = db_->Write(leveldb::WriteOptions(), &batch_);
+util/db_leveldb.hpp:    return new LevelDBCursor(db_->NewIterator(leveldb::ReadOptions()));
+util/upgrade_proto.hpp:// Upgrade NetParameter with padding layers to pad-aware conv layers.
+util/upgrade_proto.hpp:// Error if any of these above layers are not-conv layers.
+util/gpu_util.cuh:// http://docs.nvidia.com/cuda/cuda-c-programming-guide/#axzz3PVCpVsEG
+util/device_alternate.hpp:#ifdef CPU_ONLY  // CPU-only Caffe.
+util/device_alternate.hpp:#define NO_GPU LOG(FATAL) << "Cannot use GPU in CPU-only Caffe: check mode."
+util/device_alternate.hpp:  return (N + CAFFE_CUDA_NUM_THREADS - 1) / CAFFE_CUDA_NUM_THREADS;
+common.hpp://IVS-Caffe GPU accelerate parameter
+common.hpp:  // implementation from one another (for cross-platform compatibility).
+common.hpp:  // freed in a non-pinned way, which may cause problems - I haven't verified
+sgd_solvers.hpp:    CHECK_EQ(0, this->param_.momentum())
+sgd_solvers.hpp:    CHECK_EQ(0, this->param_.momentum())
+sgd_solvers.hpp:    CHECK_GE(this->param_.rms_decay(), 0)
+sgd_solvers.hpp:    CHECK_LT(this->param_.rms_decay(), 1)
+sgd_solvers.hpp: * @brief AdamSolver, an algorithm for first-order gradient-based optimization
+sgd_solvers.hpp: *        lower-order moments. Described in [1].
+layer_factory.hpp: * ("MyAwesomeLayer" -> "MyAwesome").
+layer_factory.hpp:      layer_types.push_back(iter->first);
+layer_factory.hpp:  // Layer registry should never be instantiated - everything is done with its
+layers/parameter_layer.hpp:    if (this->blobs_.size() > 0) {
+layers/parameter_layer.hpp:      this->blobs_.resize(1);
+layers/parameter_layer.hpp:      this->blobs_[0].reset(new Blob<Dtype>());
+layers/parameter_layer.hpp:      this->blobs_[0]->Reshape(this->layer_param_.parameter_param().shape());
+layers/parameter_layer.hpp:    top[0]->Reshape(this->layer_param_.parameter_param().shape());
+layers/parameter_layer.hpp:    top[0]->ShareData(*(this->blobs_[0]));
+layers/parameter_layer.hpp:    top[0]->ShareDiff(*(this->blobs_[0]));
+layers/filter_layer.hpp: * the corresponding item has to be filtered, non-zero means that corresponding
+layers/filter_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/filter_layer.hpp:   *   -# ...
+layers/filter_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/filter_layer.hpp:   *   -# @f$ (N \times 1 \times 1 \times 1) @f$
+layers/filter_layer.hpp:   *   -# @f$ (S \times C \times H \times W) @f$ ()
+layers/smooth_L1_loss_layer.hpp:// ------------------------------------------------------------------
+layers/smooth_L1_loss_layer.hpp:// Fast R-CNN
+layers/smooth_L1_loss_layer.hpp:// Licensed under The MIT License [see fast-rcnn/LICENSE for details]
+layers/smooth_L1_loss_layer.hpp:// ------------------------------------------------------------------
+layers/smooth_L1_loss_layer.hpp: *  Fast R-CNN, Ross Girshick, ICCV 2015.
+layers/smooth_L1_loss_layer.hpp:   * to both inputs -- override to return true and always allow force_backward.
+layers/accuracy_layer.hpp: * @brief Computes the classification accuracy for a one-of-many
+layers/accuracy_layer.hpp:   *   - top_k (\b optional, default 1).
+layers/accuracy_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/accuracy_layer.hpp:   *      @f$ [-\infty, +\infty] @f$ indicating the predicted score for each of
+layers/accuracy_layer.hpp:   *   -# @f$ (N \times 1 \times 1 \times 1) @f$
+layers/accuracy_layer.hpp:   *      the labels @f$ l @f$, an integer-valued Blob with values
+layers/accuracy_layer.hpp:   *      @f$ l_n \in [0, 1, 2, ..., K - 1] @f$
+layers/accuracy_layer.hpp:   *   -# @f$ (1 \times 1 \times 1 \times 1) @f$
+layers/accuracy_layer.hpp:  /// @brief Not implemented -- AccuracyLayer cannot be used as a loss.
+layers/log_layer.hpp:   *   - scale (\b optional, default 1) the scale @f$ \alpha @f$
+layers/log_layer.hpp:   *   - shift (\b optional, default 0) the shift @f$ \beta @f$
+layers/log_layer.hpp:   *   - base (\b optional, default -1 for a value of @f$ e \approx 2.718 @f$)
+layers/log_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/log_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/log_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/log_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/dropout_layer.hpp: *   -# @f$ (N \times C \times H \times W) @f$
+layers/dropout_layer.hpp: *   -# @f$ (N \times C \times H \times W) @f$
+layers/dropout_layer.hpp:   *   - dropout_ratio (\b optional, default 0.5).
+layers/dropout_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/dropout_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/dropout_layer.hpp:   *            \frac{x}{1 - p} & \mbox{if } u > p \\
+layers/dropout_layer.hpp:  /// the scale for undropped inputs at train time @f$ 1 / (1 - p) @f$
+layers/embed_layer.hpp: * @brief A layer for learning "embeddings" of one-hot vector input.
+layers/embed_layer.hpp: *        Equivalent to an InnerProductLayer with one-hot vectors as input, but
+layers/lstm_layer.hpp: * @brief Processes sequential inputs using a "Long Short-Term Memory" (LSTM)
+layers/lstm_layer.hpp: *     i_t := \sigmoid[ W_{hi} * h_{t-1} + W_{xi} * x_t + b_i ]
+layers/lstm_layer.hpp: *     f_t := \sigmoid[ W_{hf} * h_{t-1} + W_{xf} * x_t + b_f ]
+layers/lstm_layer.hpp: *     o_t := \sigmoid[ W_{ho} * h_{t-1} + W_{xo} * x_t + b_o ]
+layers/lstm_layer.hpp: *     g_t :=    \tanh[ W_{hg} * h_{t-1} + W_{xg} * x_t + b_g ]
+layers/lstm_layer.hpp: *     c_t := (f_t .* c_{t-1}) + (i_t .* g_t)
+layers/lstm_layer.hpp: * [1] Hochreiter, Sepp, and Schmidhuber, Jürgen. "Long short-term memory."
+layers/lstm_layer.hpp: *     Neural Computation 9, no. 8 (1997): 1735-1780.
+layers/lstm_layer.hpp: *        non-linearity of the LSTM, producing the updated cell and hidden
+layers/lstm_layer.hpp:   *   -# @f$ (1 \times N \times D) @f$
+layers/lstm_layer.hpp:   *      the previous timestep cell state @f$ c_{t-1} @f$
+layers/lstm_layer.hpp:   *   -# @f$ (1 \times N \times 4D) @f$
+layers/lstm_layer.hpp:   *   -# @f$ (1 \times N) @f$
+layers/lstm_layer.hpp:   *   -# @f$ (1 \times N \times D) @f$
+layers/lstm_layer.hpp:   *          c_t := cont_t * (f_t .* c_{t-1}) + (i_t .* g_t)
+layers/lstm_layer.hpp:   *   -# @f$ (1 \times N \times D) @f$
+layers/lstm_layer.hpp:   *   -# @f$ (1 \times N \times D) @f$:
+layers/lstm_layer.hpp:   *   -# @f$ (1 \times N \times D) @f$:
+layers/lstm_layer.hpp:   *        with respect to the LSTMUnit inputs @f$ c_{t-1} @f$ and the gate
+layers/lstm_layer.hpp:   *   -# @f$ (1 \times N \times D) @f$
+layers/lstm_layer.hpp:   *      @f$ c_{t-1} @f$
+layers/lstm_layer.hpp:   *   -# @f$ (1 \times N \times 4D) @f$
+layers/lstm_layer.hpp:   *   -# @f$ (1 \times 1 \times N) @f$
+layers/yolo_seg_layer.hpp:* @Date:   2019-01-29
+layers/yolo_seg_layer.hpp:* @https://github.com/eric612/Caffe-YOLOv2-Windows
+layers/yolo_seg_layer.hpp:* @https://github.com/eric612/MobileNet-YOLO
+layers/multinomial_logistic_loss_layer.hpp: * @brief Computes the multinomial logistic loss for a one-of-many
+layers/multinomial_logistic_loss_layer.hpp: *   -# @f$ (N \times C \times H \times W) @f$
+layers/multinomial_logistic_loss_layer.hpp: *   -# @f$ (N \times 1 \times 1 \times 1) @f$
+layers/multinomial_logistic_loss_layer.hpp: *      the labels @f$ l @f$, an integer-valued Blob with values
+layers/multinomial_logistic_loss_layer.hpp: *      @f$ l_n \in [0, 1, 2, ..., K - 1] @f$
+layers/multinomial_logistic_loss_layer.hpp: *   -# @f$ (1 \times 1 \times 1 \times 1) @f$
+layers/multinomial_logistic_loss_layer.hpp: *        \frac{-1}{N} \sum\limits_{n=1}^N \log(\hat{p}_{n,l_n})
+layers/multinomial_logistic_loss_layer.hpp:   *   -# @f$ (1 \times 1 \times 1 \times 1) @f$
+layers/multinomial_logistic_loss_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/multinomial_logistic_loss_layer.hpp:   *   -# @f$ (N \times 1 \times 1 \times 1) @f$
+layers/multinomial_logistic_loss_layer.hpp:   *      the labels -- ignored as we can't compute their error gradients
+layers/region_loss_layer.hpp:		return 1. / (1. + exp(-x));
+layers/clip_layer.hpp:   *   - min
+layers/clip_layer.hpp:   *   - max
+layers/clip_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/clip_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/clip_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/clip_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/recurrent_layer.hpp: *        unrolled network.  This Layer type cannot be instantiated -- instead,
+layers/recurrent_layer.hpp:    if (this->layer_param_.recurrent_param().expose_hidden()) {
+layers/recurrent_layer.hpp:      this->RecurrentInputBlobNames(&inputs);
+layers/recurrent_layer.hpp:    if (this->layer_param_.recurrent_param().expose_hidden()) {
+layers/recurrent_layer.hpp:      this->RecurrentOutputBlobNames(&outputs);
+layers/recurrent_layer.hpp:   *        should define this -- see RNNLayer and LSTMLayer for examples.
+layers/recurrent_layer.hpp:   *        Blob&s.  Subclasses should define this -- see RNNLayer and LSTMLayer
+layers/recurrent_layer.hpp:   *        Subclasses should define this -- see RNNLayer and LSTMLayer
+layers/recurrent_layer.hpp:   *        Blob&s.  Subclasses should define this -- see RNNLayer and LSTMLayer
+layers/recurrent_layer.hpp:   *        Subclasses should define this -- see RNNLayer and LSTMLayer for
+layers/recurrent_layer.hpp:   * @param bottom input Blob vector (length 2-3)
+layers/recurrent_layer.hpp:   *   -# @f$ (T \times N \times ...) @f$
+layers/recurrent_layer.hpp:   *      the time-varying input @f$ x @f$.  After the first two axes, whose
+layers/recurrent_layer.hpp:   *      dimensions may be arbitrary.  Note that the ordering of dimensions --
+layers/recurrent_layer.hpp:   *      @f$ (N \times T \times ...) @f$ -- means that the @f$ N @f$
+layers/recurrent_layer.hpp:   *   -# @f$ (T \times N) @f$
+layers/recurrent_layer.hpp:   *      hidden state @f$ h_{t-1} @f$ is multiplied by @f$ \delta_t = 0 @f$
+layers/recurrent_layer.hpp:   *      @f$ t-1 @f$, and the previous hidden state @f$ h_{t-1} @f$ affects the
+layers/recurrent_layer.hpp:   *   -# @f$ (N \times ...) @f$ (optional)
+layers/recurrent_layer.hpp:   *      the static (non-time-varying) input @f$ x_{static} @f$.
+layers/recurrent_layer.hpp:   *      This is mathematically equivalent to using a time-varying input of
+layers/recurrent_layer.hpp:   *      @f$ x'_t = [x_t; x_{static}] @f$ -- i.e., tiling the static input
+layers/recurrent_layer.hpp:   *      across the @f$ T @f$ timesteps and concatenating with the time-varying
+layers/recurrent_layer.hpp:   *   -# @f$ (T \times N \times D) @f$
+layers/recurrent_layer.hpp:   *      the time-varying output @f$ y @f$, where @f$ D @f$ is
+layers/argmax_layer.hpp:   *   - top_k (\b optional uint, default 1).
+layers/argmax_layer.hpp:   *   - out_max_val (\b optional bool, default false).
+layers/argmax_layer.hpp:   *   - axis (\b optional int).
+layers/argmax_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/argmax_layer.hpp:   *   -# @f$ (N \times 1 \times K) @f$ or, if out_max_val
+layers/argmax_layer.hpp:  /// @brief Not implemented (non-differentiable function)
+layers/pooling_layer.hpp:    return (this->layer_param_.pooling_param().pool() ==
+layers/loss_layer.hpp:const float kLOG_THRESHOLD = 1e-20;
+layers/loss_layer.hpp: * @brief An interface for Layer%s that take two Blob%s as input -- usually
+layers/loss_layer.hpp: *        (1) predictions and (2) ground-truth labels -- and output a
+layers/loss_layer.hpp: * -- the predictions.
+layers/loss_layer.hpp:   * outputs will be read from valid_count, unless it is -1 in which case
+layers/detection_output_layer.hpp:   *   -# @f$ (N \times C1 \times 1 \times 1) @f$
+layers/detection_output_layer.hpp:   *   -# @f$ (N \times C2 \times 1 \times 1) @f$
+layers/detection_output_layer.hpp:   *   -# @f$ (N \times 2 \times C3 \times 1) @f$
+layers/detection_output_layer.hpp:   *   -# @f$ (1 \times 1 \times N \times 7) @f$
+layers/neuron_layer.hpp: *        and produce one equally-sized blob as output (@f$ y @f$), where
+layers/mvn_layer.hpp: * @brief Normalizes the input to have 0-mean and/or unit (1) variance.
+layers/sigmoid_layer.hpp: * @brief Sigmoid function non-linearity @f$
+layers/sigmoid_layer.hpp: *         y = (1 + \exp(-x))^{-1}
+layers/sigmoid_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/sigmoid_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/sigmoid_layer.hpp:   *        y = (1 + \exp(-x))^{-1}
+layers/sigmoid_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/sigmoid_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/sigmoid_layer.hpp:   *            = \frac{\partial E}{\partial y} y (1 - y)
+layers/sigmoid_cross_entropy_loss_layer.hpp: * @brief Computes the cross-entropy (logistic) loss @f$
+layers/sigmoid_cross_entropy_loss_layer.hpp: *          E = \frac{-1}{n} \sum\limits_{n=1}^N \left[
+layers/sigmoid_cross_entropy_loss_layer.hpp: *                  (1 - p_n) \log(1 - \hat{p}_n)
+layers/sigmoid_cross_entropy_loss_layer.hpp: *   -# @f$ (N \times C \times H \times W) @f$
+layers/sigmoid_cross_entropy_loss_layer.hpp: *      the scores @f$ x \in [-\infty, +\infty]@f$,
+layers/sigmoid_cross_entropy_loss_layer.hpp: *   -# @f$ (N \times C \times H \times W) @f$
+layers/sigmoid_cross_entropy_loss_layer.hpp: *   -# @f$ (1 \times 1 \times 1 \times 1) @f$
+layers/sigmoid_cross_entropy_loss_layer.hpp: *      the computed cross-entropy loss: @f$
+layers/sigmoid_cross_entropy_loss_layer.hpp: *          E = \frac{-1}{n} \sum\limits_{n=1}^N \left[
+layers/sigmoid_cross_entropy_loss_layer.hpp: *                  p_n \log \hat{p}_n + (1 - p_n) \log(1 - \hat{p}_n)
+layers/sigmoid_cross_entropy_loss_layer.hpp:   * @brief Computes the sigmoid cross-entropy loss error gradient w.r.t. the
+layers/sigmoid_cross_entropy_loss_layer.hpp:   *   -# @f$ (1 \times 1 \times 1 \times 1) @f$
+layers/sigmoid_cross_entropy_loss_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/sigmoid_cross_entropy_loss_layer.hpp:   *          \frac{1}{n} \sum\limits_{n=1}^N (\hat{p}_n - p_n)
+layers/sigmoid_cross_entropy_loss_layer.hpp:   *   -# @f$ (N \times 1 \times 1 \times 1) @f$
+layers/sigmoid_cross_entropy_loss_layer.hpp:   *      the labels -- ignored as we can't compute their error gradients
+layers/sigmoid_cross_entropy_loss_layer.hpp:  /// outputs will be read from valid_count, unless it is -1 in which case
+layers/absval_layer.hpp: *   -# @f$ (N \times C \times H \times W) @f$
+layers/absval_layer.hpp: *   -# @f$ (N \times C \times H \times W) @f$
+layers/absval_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/absval_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/python_layer.hpp:    if (this->phase_ == TRAIN && Caffe::solver_count() > 1
+layers/python_layer.hpp:      LOG(FATAL) << "PythonLayer is not implemented in Multi-GPU training";
+layers/python_layer.hpp:        this->layer_param_.python_param().param_str());
+layers/python_layer.hpp:    self_.attr("phase") = static_cast<int>(this->phase_);
+layers/python_layer.hpp:    return this->layer_param_.python_param().share_in_parallel();
+layers/reorg_layer.hpp: * @brief Reshapes the input Blob into an arbitrary-sized output Blob.
+layers/bnll_layer.hpp: * @brief Computes @f$ y = x + \log(1 + \exp(-x)) @f$ if @f$ x > 0 @f$;
+layers/bnll_layer.hpp: *   -# @f$ (N \times C \times H \times W) @f$
+layers/bnll_layer.hpp: *   -# @f$ (N \times C \times H \times W) @f$
+layers/bnll_layer.hpp: *            x + \log(1 + \exp(-x)) & \mbox{if } x > 0 \\
+layers/bnll_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/bnll_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/inner_product_layer.hpp: * @brief Also known as a "fully-connected" layer, computes an inner product
+layers/exp_layer.hpp:   *   - scale (\b optional, default 1) the scale @f$ \alpha @f$
+layers/exp_layer.hpp:   *   - shift (\b optional, default 0) the shift @f$ \beta @f$
+layers/exp_layer.hpp:   *   - base (\b optional, default -1 for a value of @f$ e \approx 2.718 @f$)
+layers/exp_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/exp_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/exp_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/exp_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/batch_reindex_layer.hpp:   *   -# @f$ (N \times ...) @f$
+layers/batch_reindex_layer.hpp:   *   -# @f$ (M) @f$
+layers/batch_reindex_layer.hpp:   *   -# @f$ (M \times ...) @f$:
+layers/batch_reindex_layer.hpp:   *   -# @f$ (M \times ...) @f$:
+layers/batch_reindex_layer.hpp:   *   - @f$ \frac{\partial E}{\partial y} @f$ is de-indexed (summing where
+layers/batch_reindex_layer.hpp:   *   - This layer cannot backprop to x_2, i.e. propagate_down[1] must be
+layers/reshape_layer.hpp: * @brief Reshapes the input Blob into an arbitrary-sized output Blob.
+layers/reshape_layer.hpp:  /// @brief the index of the axis whose dimension we infer, or -1 if none
+layers/input_layer.hpp: * forward, backward, and reshape are all no-ops.
+layers/batch_norm_layer.hpp: * @brief Normalizes the input to have 0-mean and/or unit (1) variance across
+layers/batch_norm_layer.hpp: * Note that the original paper also included a per-channel learned bias and
+layers/scale_layer.hpp:   * `axis` field given by `this->layer_param_.scale_param().axis()`, after
+layers/scale_layer.hpp:   *   -# @f$ (d_0 \times ... \times
+layers/scale_layer.hpp:   *   -# @f$ (d_i \times ... \times d_j) @f$
+layers/scale_layer.hpp:   *   -# @f$ (d_0 \times ... \times
+layers/conv_layer.hpp: *   high-throughput and generality of input and filter dimensions but comes at
+layers/conv_layer.hpp:   *  - num_output. The number of filters.
+layers/conv_layer.hpp:   *  - kernel_size / kernel_h / kernel_w. The filter dimensions, given by
+layers/conv_layer.hpp:   *  - stride / stride_h / stride_w (\b optional, default 1). The filter
+layers/conv_layer.hpp:   *  - pad / pad_h / pad_w (\b optional, default 0). The zero-padding for
+layers/conv_layer.hpp:   *  - dilation (\b optional, default 1). The filter
+layers/conv_layer.hpp:   *  - group (\b optional, default 1). The number of filter groups. Group
+layers/conv_layer.hpp:   *  2 groups separate input channels 1-2 and output channels 1-4 into the
+layers/conv_layer.hpp:   *  first group and input channels 3-4 and output channels 5-8 into the second
+layers/conv_layer.hpp:   *  - bias_term (\b optional, default true). Whether to have a bias.
+layers/conv_layer.hpp:   *  - engine: convolution has CAFFE (matrix multiplication) and CUDNN (library
+layers/yolo_detection_output_layer.hpp:   *   -# @f$ (N \times C1 \times 1 \times 1) @f$
+layers/yolo_detection_output_layer.hpp:   *   -# @f$ (N \times C2 \times 1 \times 1) @f$
+layers/yolo_detection_output_layer.hpp:   *   -# @f$ (N \times 2 \times C3 \times 1) @f$
+layers/yolo_detection_output_layer.hpp:   *   -# @f$ (1 \times 1 \times N \times 7) @f$
+layers/swish_layer.hpp: * @brief Swish non-linearity @f$ y = x \sigma (\beta x) @f$.
+layers/swish_layer.hpp:   *   - beta (\b optional, default 1).
+layers/swish_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/swish_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/swish_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/swish_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/swish_layer.hpp:   *              \sigma (\beta x)(1 - \beta y))
+layers/assisted_excitation_layer.hpp:* @Date:   2019-08-22
+layers/assisted_excitation_layer.hpp:* @https://github.com/eric612/Caffe-YOLOv2-Windows
+layers/assisted_excitation_layer.hpp:* @https://github.com/eric612/MobileNet-YOLO
+layers/concat_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/concat_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/concat_layer.hpp:   *   -# ...
+layers/concat_layer.hpp:   *   - K @f$ (N \times C \times H \times W) @f$
+layers/concat_layer.hpp:   *   -# @f$ (KN \times C \times H \times W) @f$ if axis == 0, or
+layers/concat_layer.hpp:   *   -# @f$ (KN \times C \times H \times W) @f$ if axis == 0, or
+layers/contrastive_loss_layer.hpp: *              \left(1-y\right) \max \left(margin-d, 0\right)^2
+layers/contrastive_loss_layer.hpp: *          d = \left| \left| a_n - b_n \right| \right|_2 @f$. This can be
+layers/contrastive_loss_layer.hpp: *   -# @f$ (N \times C \times 1 \times 1) @f$
+layers/contrastive_loss_layer.hpp: *      the features @f$ a \in [-\infty, +\infty]@f$
+layers/contrastive_loss_layer.hpp: *   -# @f$ (N \times C \times 1 \times 1) @f$
+layers/contrastive_loss_layer.hpp: *      the features @f$ b \in [-\infty, +\infty]@f$
+layers/contrastive_loss_layer.hpp: *   -# @f$ (N \times 1 \times 1 \times 1) @f$
+layers/contrastive_loss_layer.hpp: *   -# @f$ (1 \times 1 \times 1 \times 1) @f$
+layers/contrastive_loss_layer.hpp: *          \left(1-y\right) \max \left(margin-d, 0\right)^2
+layers/contrastive_loss_layer.hpp: *          d = \left| \left| a_n - b_n \right| \right|_2 @f$.
+layers/contrastive_loss_layer.hpp:   *   -# @f$ (1 \times 1 \times 1 \times 1) @f$
+layers/contrastive_loss_layer.hpp:   *   -# @f$ (N \times C \times 1 \times 1) @f$
+layers/contrastive_loss_layer.hpp:   *   -# @f$ (N \times C \times 1 \times 1) @f$
+layers/reduction_layer.hpp: * @brief Compute "reductions" -- operations that return a scalar output Blob
+layers/yolov3_detection_output_layer.hpp:   *   -# @f$ (N \times C1 \times 1 \times 1) @f$
+layers/yolov3_detection_output_layer.hpp:   *   -# @f$ (N \times C2 \times 1 \times 1) @f$
+layers/yolov3_detection_output_layer.hpp:   *   -# @f$ (N \times 2 \times C3 \times 1) @f$
+layers/yolov3_detection_output_layer.hpp:   *   -# @f$ (1 \times 1 \times N \times 7) @f$
+layers/elu_layer.hpp: * @brief Exponential Linear Unit non-linearity @f$
+layers/elu_layer.hpp: *            \alpha (\exp(x)-1) & \mathrm{if} \; x \le 0
+layers/elu_layer.hpp:   *   - alpha (\b optional, default 1).
+layers/elu_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/elu_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/elu_layer.hpp:   *            \alpha (\exp(x)-1) & \mathrm{if} \; x \le 0
+layers/elu_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/elu_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/tanh_layer.hpp: * @brief TanH hyperbolic tangent non-linearity @f$
+layers/tanh_layer.hpp: *         y = \frac{\exp(2x) - 1}{\exp(2x) + 1}
+layers/tanh_layer.hpp: *     @f$, popular in auto-encoders.
+layers/tanh_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/tanh_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/tanh_layer.hpp:   *        y = \frac{\exp(2x) - 1}{\exp(2x) + 1}
+layers/tanh_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/tanh_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/tanh_layer.hpp:   *              \left(1 - \left[\frac{\exp(2x) - 1}{exp(2x) + 1} \right]^2 \right)
+layers/tanh_layer.hpp:   *            = \frac{\partial E}{\partial y} (1 - y^2)
+layers/axpy_layer.hpp: *        channel-wise scale operation and element-wise addition operation 
+layers/axpy_layer.hpp: *            a:  N x C          --> bottom[0]      
+layers/axpy_layer.hpp: *            X:  N x C x H x W  --> bottom[1]       
+layers/axpy_layer.hpp: *            Y:  N x C x H x W  --> bottom[2]     
+layers/axpy_layer.hpp: *            F:  N x C x H x W  --> top[0]
+layers/cudnn_pooling_layer.hpp:  virtual inline int MinTopBlobs() const { return -1; }
+layers/relu_layer.hpp: * @brief Rectified Linear Unit non-linearity @f$ y = \max(0, x) @f$.
+layers/relu_layer.hpp:   *   - negative_slope (\b optional, default 0).
+layers/relu_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/relu_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/relu_layer.hpp:   *      @f$ by default.  If a non-zero negative_slope @f$ \nu @f$ is provided,
+layers/relu_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/relu_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/relu_layer.hpp:   *      If a non-zero negative_slope @f$ \nu @f$ is provided,
+layers/segmentation_evaluate_layer.hpp:* @Date:   2019-03-11
+layers/segmentation_evaluate_layer.hpp:* @https://github.com/eric612/Caffe-YOLOv3-Windows
+layers/segmentation_evaluate_layer.hpp:* @https://github.com/eric612/MobileNet-YOLO
+layers/segmentation_evaluate_layer.hpp:   *   -# @f$ (1 \times 1 \times N \times 7) @f$
+layers/segmentation_evaluate_layer.hpp:   *   -# @f$ (1 \times 1 \times M \times 7) @f$
+layers/segmentation_evaluate_layer.hpp:   *   -# @f$ (1 \times 1 \times N \times 4) @f$
+layers/euclidean_loss_layer.hpp: *          E = \frac{1}{2N} \sum\limits_{n=1}^N \left| \left| \hat{y}_n - y_n
+layers/euclidean_loss_layer.hpp: *        \right| \right|_2^2 @f$ for real-valued regression tasks.
+layers/euclidean_loss_layer.hpp: *   -# @f$ (N \times C \times H \times W) @f$
+layers/euclidean_loss_layer.hpp: *      the predictions @f$ \hat{y} \in [-\infty, +\infty]@f$
+layers/euclidean_loss_layer.hpp: *   -# @f$ (N \times C \times H \times W) @f$
+layers/euclidean_loss_layer.hpp: *      the targets @f$ y \in [-\infty, +\infty]@f$
+layers/euclidean_loss_layer.hpp: *   -# @f$ (1 \times 1 \times 1 \times 1) @f$
+layers/euclidean_loss_layer.hpp: *          \frac{1}{2n} \sum\limits_{n=1}^N \left| \left| \hat{y}_n - y_n
+layers/euclidean_loss_layer.hpp: * This can be used for least-squares regression tasks.  An InnerProductLayer
+layers/euclidean_loss_layer.hpp: * regression problem. With non-zero weight decay the problem becomes one of
+layers/euclidean_loss_layer.hpp: * ridge regression -- see src/caffe/test/test_sgd_solver.cpp for a concrete
+layers/euclidean_loss_layer.hpp: * this structure match hand-computed gradient formulas for ridge regression.
+layers/euclidean_loss_layer.hpp:   * to both inputs -- override to return true and always allow force_backward.
+layers/euclidean_loss_layer.hpp:   * or if force_backward is set). In fact, this layer is "commutative" -- the
+layers/euclidean_loss_layer.hpp:   *   -# @f$ (1 \times 1 \times 1 \times 1) @f$
+layers/euclidean_loss_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/euclidean_loss_layer.hpp:   *            \frac{1}{n} \sum\limits_{n=1}^N (\hat{y}_n - y_n)
+layers/euclidean_loss_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/euclidean_loss_layer.hpp:   *          \frac{1}{n} \sum\limits_{n=1}^N (y_n - \hat{y}_n)
+layers/multibox_loss_layer.hpp: *  - decode the predictions.
+layers/multibox_loss_layer.hpp: *  - perform matching between priors/predictions and ground truth.
+layers/multibox_loss_layer.hpp: *  - use matched boxes and confidences to compute loss.
+layers/softmax_loss_layer.hpp: * @brief Computes the multinomial logistic loss for a one-of-many
+layers/softmax_loss_layer.hpp: *        classification task, passing real-valued predictions through a
+layers/softmax_loss_layer.hpp: *   -# @f$ (N \times C \times H \times W) @f$
+layers/softmax_loss_layer.hpp: *      @f$ [-\infty, +\infty] @f$ indicating the predicted score for each of
+layers/softmax_loss_layer.hpp: *   -# @f$ (N \times 1 \times 1 \times 1) @f$
+layers/softmax_loss_layer.hpp: *      the labels @f$ l @f$, an integer-valued Blob with values
+layers/softmax_loss_layer.hpp: *      @f$ l_n \in [0, 1, 2, ..., K - 1] @f$
+layers/softmax_loss_layer.hpp: *   -# @f$ (1 \times 1 \times 1 \times 1) @f$
+layers/softmax_loss_layer.hpp: *      the computed cross-entropy classification loss: @f$ E =
+layers/softmax_loss_layer.hpp: *        \frac{-1}{N} \sum\limits_{n=1}^N \log(\hat{p}_{n,l_n})
+layers/softmax_loss_layer.hpp:    *  - ignore_label (optional)
+layers/softmax_loss_layer.hpp:    *  - normalize (optional, default true)
+layers/softmax_loss_layer.hpp:  virtual inline int ExactNumTopBlobs() const { return -1; }
+layers/softmax_loss_layer.hpp:   *   -# @f$ (1 \times 1 \times 1 \times 1) @f$
+layers/softmax_loss_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/softmax_loss_layer.hpp:   *   -# @f$ (N \times 1 \times 1 \times 1) @f$
+layers/softmax_loss_layer.hpp:   *      the labels -- ignored as we can't compute their error gradients
+layers/softmax_loss_layer.hpp:  /// outputs will be read from valid_count, unless it is -1 in which case
+layers/rnn_layer.hpp: * @brief Processes time-varying inputs using a simple recurrent neural network
+layers/rnn_layer.hpp: * Given time-varying inputs @f$ x_t @f$, computes hidden state @f$
+layers/window_data_layer.hpp: *        archival purposes for use by the original R-CNN.
+layers/detection_evaluate_layer.hpp:   *   -# @f$ (1 \times 1 \times N \times 7) @f$
+layers/detection_evaluate_layer.hpp:   *   -# @f$ (1 \times 1 \times M \times 7) @f$
+layers/detection_evaluate_layer.hpp:   *   -# @f$ (1 \times 1 \times N \times 4) @f$
+layers/power_layer.hpp:   *   - scale (\b optional, default 1) the scale @f$ \alpha @f$
+layers/power_layer.hpp:   *   - shift (\b optional, default 0) the shift @f$ \beta @f$
+layers/power_layer.hpp:   *   - power (\b optional, default 1) the power @f$ \gamma @f$
+layers/power_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/power_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/power_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/power_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/power_layer.hpp:   *            \alpha \gamma (\alpha x + \beta) ^ {\gamma - 1} =
+layers/cudnn_conv_layer.hpp: * but for fully-convolutional models and large inputs the CAFFE engine can be
+layers/prelu_layer.hpp: * @brief Parameterized Rectified Linear Unit non-linearity @f$
+layers/prelu_layer.hpp: *        equal to 2. The 1st axis (0-based) is seen as channels.
+layers/prelu_layer.hpp:   *   - filler (\b optional, FillerParameter,
+layers/prelu_layer.hpp:   *   - channel_shared (\b optional, default false).
+layers/prelu_layer.hpp:   *   -# @f$ (N \times C \times ...) @f$
+layers/prelu_layer.hpp:   *   -# @f$ (N \times C \times ...) @f$
+layers/prelu_layer.hpp:   *   -# @f$ (N \times C \times ...) @f$
+layers/prelu_layer.hpp:   *   -# @f$ (N \times C \times ...) @f$
+layers/prelu_layer.hpp:  Blob<Dtype> bottom_memory_;  // memory for in-place computation
+layers/flatten_layer.hpp: * Note: because this layer does not change the input values -- merely the
+layers/flatten_layer.hpp: * dimensions -- it can simply copy the input. The copy happens "virtually"
+layers/flatten_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/flatten_layer.hpp:   *   -# @f$ (N \times CHW \times 1 \times 1) @f$
+layers/flatten_layer.hpp:   *      the outputs -- i.e., the (virtually) copied, flattened inputs
+layers/infogain_loss_layer.hpp: * @param bottom input Blob vector (length 2-3)
+layers/infogain_loss_layer.hpp: *   -# @f$ (N \times C \times H \times W) @f$
+layers/infogain_loss_layer.hpp: *      @f$ [-\infty, +\infty] @f$ indicating the predicted score for each of
+layers/infogain_loss_layer.hpp: *   -# @f$ (N \times 1 \times 1 \times 1) @f$
+layers/infogain_loss_layer.hpp: *      the labels @f$ l @f$, an integer-valued Blob with values
+layers/infogain_loss_layer.hpp: *      @f$ l_n \in [0, 1, 2, ..., K - 1] @f$
+layers/infogain_loss_layer.hpp: *   -# @f$ (1 \times 1 \times K \times K) @f$
+layers/infogain_loss_layer.hpp: *   -# @f$ (1 \times 1 \times 1 \times 1) @f$
+layers/infogain_loss_layer.hpp: *        \frac{-1}{N} \sum\limits_{n=1}^N H_{l_n} \log(\hat{p}_n) =
+layers/infogain_loss_layer.hpp: *        \frac{-1}{N} \sum\limits_{n=1}^N \sum\limits_{k=1}^{K} H_{l_n,k}
+layers/infogain_loss_layer.hpp:  // InfogainLossLayer takes 2-3 bottom Blobs; if there are 3 the third should
+layers/infogain_loss_layer.hpp:  virtual inline int ExactNumBottomBlobs() const { return -1; }
+layers/infogain_loss_layer.hpp:  virtual inline int ExactNumTopBlobs() const { return -1; }
+layers/infogain_loss_layer.hpp:   *   -# @f$ (1 \times 1 \times 1 \times 1) @f$
+layers/infogain_loss_layer.hpp:   * @param bottom input Blob vector (length 2-3)
+layers/infogain_loss_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/infogain_loss_layer.hpp:   *   -# @f$ (N \times 1 \times 1 \times 1) @f$
+layers/infogain_loss_layer.hpp:   *      the labels -- ignored as we can't compute their error gradients
+layers/infogain_loss_layer.hpp:   *   -# @f$ (1 \times 1 \times K \times K) @f$
+layers/infogain_loss_layer.hpp:   *      (\b optional) the information gain matrix -- ignored as its error
+layers/infogain_loss_layer.hpp:  /// outputs will be read from valid_count, unless it is -1 in which case
+layers/hinge_loss_layer.hpp: * @brief Computes the hinge loss for a one-of-many classification task.
+layers/hinge_loss_layer.hpp: *   -# @f$ (N \times C \times H \times W) @f$
+layers/hinge_loss_layer.hpp: *      @f$ [-\infty, +\infty] @f$ indicating the predicted score for each of
+layers/hinge_loss_layer.hpp: *      taking the inner product @f$ X^T W @f$ of the D-dimensional features
+layers/hinge_loss_layer.hpp: *   -# @f$ (N \times 1 \times 1 \times 1) @f$
+layers/hinge_loss_layer.hpp: *      the labels @f$ l @f$, an integer-valued Blob with values
+layers/hinge_loss_layer.hpp: *      @f$ l_n \in [0, 1, 2, ..., K - 1] @f$
+layers/hinge_loss_layer.hpp: *   -# @f$ (1 \times 1 \times 1 \times 1) @f$
+layers/hinge_loss_layer.hpp: *        [\max(0, 1 - \delta\{l_n = k\} t_{nk})] ^ p
+layers/hinge_loss_layer.hpp: *      (defaults to @f$ p = 1 @f$, the L1 norm; L2 norm, as in L2-SVM,
+layers/hinge_loss_layer.hpp: *           -1 & \mbox{otherwise}
+layers/hinge_loss_layer.hpp:   *   -# @f$ (1 \times 1 \times 1 \times 1) @f$
+layers/hinge_loss_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/hinge_loss_layer.hpp:   *   -# @f$ (N \times 1 \times 1 \times 1) @f$
+layers/hinge_loss_layer.hpp:   *      the labels -- ignored as we can't compute their error gradients
+layers/prior_box_layer.hpp:   *   - min_size (\b minimum box size in pixels. can be multiple. required!).
+layers/prior_box_layer.hpp:   *   - max_size (\b maximum box size in pixels. can be ignored or same as the
+layers/prior_box_layer.hpp:   *   - aspect_ratio (\b optional aspect ratios of the boxes. can be multiple).
+layers/prior_box_layer.hpp:   *   - flip (\b optional bool, default true).
+layers/prior_box_layer.hpp:   *   -# @f$ (N \times C \times H_i \times W_i) @f$
+layers/prior_box_layer.hpp:   *   -# @f$ (N \times C \times H_0 \times W_0) @f$
+layers/prior_box_layer.hpp:   *   -# @f$ (N \times 2 \times K*4) @f$ where @f$ K @f$ is the prior numbers
+layers/threshold_layer.hpp:   *   - threshold (\b optional, default 0).
+layers/threshold_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/threshold_layer.hpp:   *   -# @f$ (N \times C \times H \times W) @f$
+layers/threshold_layer.hpp:  /// @brief Not implemented (non-differentiable function)
+layer.hpp:          blobs_[i]->FromProto(layer_param_.blobs(i));
+layer.hpp:   * Sets up the loss weight multiplier blobs for any non-zero loss weights.
+layer.hpp:   * @brief Does layer-specific setup: your layer should implement this function
+layer.hpp:   * This method should do one-time layer specific setup. This includes reading
+layer.hpp:   * bottom blobs.  If the layer has any non-zero loss_weights, the wrapper
+layer.hpp:   *        or -1 if no exact number is required.
+layer.hpp:   * This method should be overridden to return a non-negative value if your
+layer.hpp:  virtual inline int ExactNumBottomBlobs() const { return -1; }
+layer.hpp:   *        or -1 if no minimum number is required.
+layer.hpp:   * This method should be overridden to return a non-negative value if your
+layer.hpp:  virtual inline int MinBottomBlobs() const { return -1; }
+layer.hpp:   *        or -1 if no maximum number is required.
+layer.hpp:   * This method should be overridden to return a non-negative value if your
+layer.hpp:  virtual inline int MaxBottomBlobs() const { return -1; }
+layer.hpp:   *        or -1 if no exact number is required.
+layer.hpp:   * This method should be overridden to return a non-negative value if your
+layer.hpp:  virtual inline int ExactNumTopBlobs() const { return -1; }
+layer.hpp:   *        or -1 if no minimum number is required.
+layer.hpp:   * This method should be overridden to return a non-negative value if your
+layer.hpp:  virtual inline int MinTopBlobs() const { return -1; }
+layer.hpp:   *        or -1 if no maximum number is required.
+layer.hpp:   * This method should be overridden to return a non-negative value if your
+layer.hpp:  virtual inline int MaxTopBlobs() const { return -1; }
+layer.hpp:  /** The vector that indicates whether each top blob has a non-zero weight in
+layer.hpp:   * the loss function. Store non-zero loss weights in the diff blob.
+layer.hpp:        this->set_loss(top_id, loss_weight);
+layer.hpp:        const int count = top[top_id]->count();
+layer.hpp:        Dtype* loss_multiplier = top[top_id]->mutable_cpu_diff();
+layer.hpp:      if (!this->loss(top_id)) { continue; }
+layer.hpp:      const int count = top[top_id]->count();
+layer.hpp:      const Dtype* data = top[top_id]->cpu_data();
+layer.hpp:      const Dtype* loss_weights = top[top_id]->cpu_diff();
+layer.hpp:      if (!this->loss(top_id)) { continue; }
+layer.hpp:      const int count = top[top_id]->count();
+layer.hpp:      const Dtype* data = top[top_id]->gpu_data();
+layer.hpp:      const Dtype* loss_weights = top[top_id]->gpu_diff();
+layer.hpp:  param->Clear();
+layer.hpp:  param->CopyFrom(layer_param_);
+layer.hpp:  param->clear_blobs();
+layer.hpp:    blobs_[i]->ToProto(param->add_blobs(), write_diff);

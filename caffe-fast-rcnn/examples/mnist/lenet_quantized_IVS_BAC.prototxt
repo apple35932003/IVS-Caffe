@@ -1,0 +1,228 @@
+name: "LeNet"
+layer {
+  name: "mnist"
+  type: "Data"
+  top: "data"
+  top: "label"
+  include {
+    phase: TRAIN
+  }
+  transform_param {
+    scale: 0.00390625
+  }
+  data_param {
+    source: "examples/mnist/mnist_train_lmdb"
+    batch_size: 64
+    backend: LMDB
+  }
+}
+layer {
+  name: "mnist"
+  type: "Data"
+  top: "data"
+  top: "label"
+  include {
+    phase: TEST
+  }
+  transform_param {
+    scale: 0.00390625
+  }
+  data_param {
+    source: "examples/mnist/mnist_test_lmdb"
+    batch_size: 100
+    backend: LMDB
+  }
+}
+layer {
+  name: "conv1"
+  type: "ConvolutionIVS"
+  bottom: "data"
+  top: "conv1"
+  param {
+    lr_mult: 1.0
+  }
+  param {
+    lr_mult: 2.0
+  }
+  convolution_param {
+    num_output: 20
+    kernel_size: 5
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+  quantization_param {
+    precision: DYNAMIC_FIXED_POINT
+    bw_layer_in: 5
+    bw_layer_out: 5
+    bw_params: 2
+    bw_add: 9
+    bw_multiply: 6
+    fl_layer_in: 5
+    fl_layer_out: 3
+    fl_params: 1
+    fl_add: 7
+    fl_multiply: 7
+    rounding_time: EVERY_OPERATION
+    analyze_mode: NO_ANALYZE
+  }
+}
+layer {
+  name: "pool1"
+  type: "Pooling"
+  bottom: "conv1"
+  top: "pool1"
+  pooling_param {
+    pool: MAX
+    kernel_size: 2
+    stride: 2
+  }
+}
+layer {
+  name: "conv2"
+  type: "ConvolutionIVS"
+  bottom: "pool1"
+  top: "conv2"
+  param {
+    lr_mult: 1.0
+  }
+  param {
+    lr_mult: 2.0
+  }
+  convolution_param {
+    num_output: 50
+    kernel_size: 5
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+  quantization_param {
+    precision: DYNAMIC_FIXED_POINT
+    bw_layer_in: 5
+    bw_layer_out: 5
+    bw_params: 2
+    bw_add: 9
+    bw_multiply: 6
+    fl_layer_in: 3
+    fl_layer_out: 1
+    fl_params: 3
+    fl_add: 5
+    fl_multiply: 7
+    rounding_time: EVERY_OPERATION
+    analyze_mode: NO_ANALYZE
+  }
+}
+layer {
+  name: "pool2"
+  type: "Pooling"
+  bottom: "conv2"
+  top: "pool2"
+  pooling_param {
+    pool: MAX
+    kernel_size: 2
+    stride: 2
+  }
+}
+layer {
+  name: "ip1"
+  type: "FcIVS"
+  bottom: "pool2"
+  top: "ip1"
+  param {
+    lr_mult: 1.0
+  }
+  param {
+    lr_mult: 2.0
+  }
+  inner_product_param {
+    num_output: 500
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+  quantization_param {
+    precision: DYNAMIC_FIXED_POINT
+    bw_layer_in: 5
+    bw_layer_out: 5
+    bw_params: 3
+    bw_add: 9
+    bw_multiply: 6
+    fl_layer_in: 1
+    fl_layer_out: 1
+    fl_params: 5
+    fl_add: 5
+    fl_multiply: 5
+    rounding_time: EVERY_OPERATION
+    analyze_mode: NO_ANALYZE
+  }
+}
+layer {
+  name: "relu1"
+  type: "ReLU"
+  bottom: "ip1"
+  top: "ip1/t"
+}
+layer {
+  name: "ip2"
+  type: "FcIVS"
+  bottom: "ip1/t"
+  top: "ip2"
+  param {
+    lr_mult: 1.0
+  }
+  param {
+    lr_mult: 2.0
+  }
+  inner_product_param {
+    num_output: 10
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+  quantization_param {
+    precision: DYNAMIC_FIXED_POINT
+    bw_layer_in: 5
+    bw_layer_out: 5
+    bw_params: 3
+    bw_add: 9
+    bw_multiply: 6
+    fl_layer_in: 1
+    fl_layer_out: -1
+    fl_params: 3
+    fl_add: 4
+    fl_multiply: 4
+    rounding_time: EVERY_OPERATION
+    analyze_mode: NO_ANALYZE
+  }
+}
+layer {
+  name: "accuracy"
+  type: "Accuracy"
+  bottom: "ip2"
+  bottom: "label"
+  top: "accuracy"
+  include {
+    phase: TEST
+  }
+}
+layer {
+  name: "loss"
+  type: "SoftmaxWithLoss"
+  bottom: "ip2"
+  bottom: "label"
+  top: "loss"
+}
